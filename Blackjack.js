@@ -23,12 +23,47 @@ function deal(cardsToDeal) {
     if (cardsToDeal == 0) {
         return;        
     } else {
-        var suit = Math.floor(Math.random() * 4 + 1);
-        var rank = Math.floor(Math.random() * 13 + 1);
-        var result = new Card(suit, rank);
+        var card = unshift(Deck);
+
         return result;
     }
     
+}
+
+function Deck() {
+    var result = [];
+    var ranks = [1,2,3,4,5,6,7,8,9,10,11,12,13];
+    var suits = [1,2,3,4];
+
+    for (var s = 1; s <= suits.length; s++) {
+        for (var r = 1; r <= ranks.length; r++) {
+            result.push({"suit": s, "rank": r});
+        }
+    }
+
+    this.shuffle = function(array) {
+        var currentIndex = array.length, temporaryValue, randomIndex ;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+        }
+
+        return array;
+
+        }
+    this.shuffle(result);
+
+    return result;
+
 }
 
 function Hand() {
@@ -144,6 +179,7 @@ function declareWinner(userHand, dealerHand) {
 }
 
 function playGame() {
+    var deck = Deck();
     var user = playAsUser();
     var dealer = playAsDealer();
     declareWinner(user, dealer);
