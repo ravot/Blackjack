@@ -57,9 +57,52 @@ function Hand() {
     
     this.printHand = function() {
         var hand_string = "";
+        var value, suit;
         for (var i = 0; i < fingers.length; i++) {
-            hand_string += fingers[i].getNumber() +
-            " of " + fingers[i].getSuit() + ", ";
+            switch(fingers[i].getNumber()) {
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+                default:
+                    value = fingers[i].getNumber();
+                    break;
+                case 11:
+                    value = "Jack";
+                    break;
+                case 12:
+                    value = "Queen";
+                    break;
+                case 13:
+                    value = "King";
+                    break;
+                case 1:
+                    value = "Ace";
+                    break;
+
+            };
+            switch(fingers[i].getSuit()) {
+                case 1:
+                    suit = "Diamonds";
+                    break;
+                case 2:
+                    suit = "Clubs";
+                    break;
+                case 3:
+                    suit = "Hearts";
+                    break;
+                case 4:
+                    suit = "Spades";
+                    break;
+            }
+
+            hand_string += value +
+            " of " + suit + ", ";
         }
         return hand_string;
     }
