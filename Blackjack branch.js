@@ -70,7 +70,7 @@ function Hand() {
     var fingers = [];
     fingers[0] = deal();
     fingers[1] = deal();
-    
+    console.log(fingers[0]);
     this.getHand = function() {
         return fingers;
     }
