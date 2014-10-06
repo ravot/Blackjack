@@ -78,7 +78,7 @@ function Hand(deck) {
 		return hand;
 	}
 
-	this.hitMe = function() {
+	this.hitMe = function(deck) {
 		hand.push(deck.deal());
 	};
 
@@ -160,19 +160,19 @@ console.log(newHand.getCard().getNumber());
 
 
 
-function playAsDealer() {
-    var dealerHand = new Hand();
+function playAsDealer(deck) {
+    var dealerHand = new Hand(deck);
     while (dealerHand.score() < 17) {
-        dealerHand.hitMe();
+        dealerHand.hitMe(deck);
     }
     return dealerHand;
 }
 
-function playAsUser() {
-    var userHand = new Hand();
+function playAsUser(deck) {
+    var userHand = new Hand(deck);
     var decision = confirm(userHand.printHand() + "for a score of " + userHand.score() + "." + " Press OK to hit, press cancel to stay");
     while (decision) {
-        userHand.hitMe();
+        userHand.hitMe(deck);
         decision = confirm(userHand.printHand() + "for a score of " + userHand.score() + "." + " Press OK to hit, press cancel to stay");
     }
     return userHand;
@@ -191,10 +191,10 @@ function declareWinner(userHand, dealerHand) {
 }
 
 function playGame() {
-    var user = playAsUser();
-    var dealer = playAsDealer();
+	var newDeck = new Deck();
+    var user = playAsUser(newDeck);
+    var dealer = playAsDealer(newDeck);
     declareWinner(user, dealer);
 }
 
-var deck = Deck();
 playGame();
