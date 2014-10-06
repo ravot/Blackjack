@@ -179,9 +179,10 @@ function declareWinner(userHand, dealerHand) {
 }
 
 function playGame() {
-    var deck = Deck();
     var user = playAsUser();
     var dealer = playAsDealer();
     declareWinner(user, dealer);
 }
+
+var deck = Deck();
 playGame();
