@@ -2,10 +2,10 @@
 function Card(suit, rank) {
     var suit = suit, rank = rank;
     this.getNumber = function() {
-        return rank;
+        return this.rank;
     }
     this.getSuit = function() {
-        return suit;
+        return this.suit;
     }
     this.getValue = function() {
         var value = this.getNumber();
