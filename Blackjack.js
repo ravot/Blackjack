@@ -23,9 +23,9 @@ function deal(cardsToDeal) {
     if (cardsToDeal == 0) {
         return;        
     } else {
-        var card = unshift(Deck);
+        var card = deck[deck.unshift() - 1];
 
-        return result;
+        return card;
     }
     
 }
