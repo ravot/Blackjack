@@ -1,11 +1,51 @@
-    // Card Constructor
+function Deck() {
+    var ranks = [1,2,3,4,5,6,7,8,9,10,11,12,13];
+    var suits = [1,2,3,4];
+    var deck = [];
+
+	for (var s = 1; s <= suits.length; s++) {
+        for (var r = 1; r <= ranks.length; r++) {
+            deck.push(new Card(s, r));
+        }
+    }
+
+    this.getDeck = function() {
+    	return deck;
+    }
+
+    this.deal = function() {
+    	return deck.shift();
+    }
+
+    this.shuffle = function(deck) {
+        var currentIndex = deck.length, holder, rand;
+
+        while (0 !== currentIndex) {
+
+            rand = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            holder = deck[currentIndex];
+            deck[currentIndex] = deck[rand];
+            deck[rand] = holder;
+        }
+
+        return deck;
+
+        }
+
+    this.shuffle(deck);
+
+}
+
+
 function Card(suit, rank) {
     var suit = suit, rank = rank;
     this.getNumber = function() {
-        return this.rank;
+        return rank;
     }
     this.getSuit = function() {
-        return this.suit;
+        return suit;
     }
     this.getValue = function() {
         var value = this.getNumber();
@@ -19,82 +59,34 @@ function Card(suit, rank) {
     }
 }
 
-function deal(cardsToDeal) {
-    if (cardsToDeal == 0) {
-        return;        
-    } else {
-        var card = deck[deck.unshift() - 1];
+/* test cases to see if deck and cards are properly made,
+and to see if deal shifts the deck properly:
 
-        return card;
-    }
-    
-}
+var newDeck = new Deck();
+console.log(newDeck.getDeck()[0].getNumber());
+console.log(newDeck.getDeck()[1].getNumber());
 
-function Deck() {
-    var result = [];
-    var ranks = [1,2,3,4,5,6,7,8,9,10,11,12,13];
-    var suits = [1,2,3,4];
+var newCard = newDeck.deal();
+console.log(newCard.getNumber());
+*/
 
-    for (var s = 1; s <= suits.length; s++) {
-        for (var r = 1; r <= ranks.length; r++) {
-            result.push({"suit": s, "rank": r});
-        }
-    }
 
-    this.shuffle = function(array) {
-        var currentIndex = array.length, temporaryValue, randomIndex ;
+function Hand(deck) {
+	var hand = [];
+	hand[0] = deck.deal();
+	this.getHand = function() {
+		return hand;
+	}
 
-        // While there remain elements to shuffle...
-        while (0 !== currentIndex) {
+	this.hitMe = function() {
+		hand.push(deck.deal());
+	};
 
-            // Pick a remaining element...
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-
-            // And swap it with the current element.
-            temporaryValue = array[currentIndex];
-            array[currentIndex] = array[randomIndex];
-            array[randomIndex] = temporaryValue;
-        }
-
-        return array;
-
-        }
-    this.shuffle(result);
-
-    return result;
-
-}
-
-function Hand() {
-    var fingers = [];
-    fingers[0] = deal();
-    fingers[1] = deal();
-    console.log(fingers[0]);
-    this.getHand = function() {
-        return fingers;
-    }
-    
-    this.score = function() {
-        var score = 0;
-        for (var i = 0; i < fingers.length; i++) 
-            if (fingers[i].getValue() == 11 &&
-                score + fingers[i].getValue() == 21) {
-                return score = 21;
-            } else if (fingers[i].getValue() == 11 &&
-                        score + fingers[i].getValue() > 21) {
-                return score += 1;
-            } else {
-                score += fingers[i].getValue();
-                }
-        return score;
-    }
-    
-    this.printHand = function() {
+	this.printHand = function() {
         var hand_string = "";
         var value, suit;
-        for (var i = 0; i < fingers.length; i++) {
-            switch(fingers[i].getNumber()) {
+        for (var i = 0; i < hand.length; i++) {
+            switch(hand[i].getNumber()) {
                 case 2:
                 case 3:
                 case 4:
@@ -105,7 +97,7 @@ function Hand() {
                 case 9:
                 case 10:
                 default:
-                    value = fingers[i].getNumber();
+                    value = hand[i].getNumber();
                     break;
                 case 11:
                     value = "Jack";
@@ -121,7 +113,7 @@ function Hand() {
                     break;
 
             };
-            switch(fingers[i].getSuit()) {
+            switch(hand[i].getSuit()) {
                 case 1:
                     suit = "Diamonds";
                     break;
@@ -141,12 +133,32 @@ function Hand() {
         }
         return hand_string;
     }
-    
-    this.hitMe = function() {
-        var newCard = deal();
-        fingers.push(newCard);
+	this.score = function() {
+        var score = 0;
+        for (var i = 0; i < hand.length; i++) 
+            if (hand[i].getValue() == 11 &&
+                score + hand[i].getValue() == 21) {
+                return score = 21;
+            } else if (hand[i].getValue() == 11 &&
+                        score + hand[i].getValue() > 21) {
+                return score += 1;
+            } else {
+                score += hand[i].getValue();
+                }
+        return score;
     }
+
 }
+
+/* test cases to see if Hand properly
+gets its faceDownCard:
+
+var newHand = new Hand(newDeck);
+console.log(newHand.getCard().getNumber());
+
+*/
+
+
 
 function playAsDealer() {
     var dealerHand = new Hand();
