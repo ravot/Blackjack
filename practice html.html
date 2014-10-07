@@ -16,9 +16,9 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
 		<script>
-		$(document).ready(function() {
-			
-		function Deck() {
+
+
+                    function Deck() {
             var ranks = [1,2,3,4,5,6,7,8,9,10,11,12,13];
             var suits = [1,2,3,4];
             var deck = [];
@@ -29,34 +29,34 @@
                     }
                 }
 
-	        this.getDeck = function() {
-	          return deck;
-	        }
+        this.getDeck = function() {
+          return deck;
+        }
 
-	        this.deal = function() {
-	          return deck.shift();
-	        }
+        this.deal = function() {
+          return deck.shift();
+        }
 
-	        this.shuffle = function(deck) {
-	            var currentIndex = deck.length, holder, rand;
+        this.shuffle = function(deck) {
+            var currentIndex = deck.length, holder, rand;
 
-	            while (0 !== currentIndex) {
+            while (0 !== currentIndex) {
 
-	                rand = Math.floor(Math.random() * currentIndex);
-	                currentIndex -= 1;
+                rand = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
 
-	                holder = deck[currentIndex];
-	                deck[currentIndex] = deck[rand];
-	                deck[rand] = holder;
-	            }
+                holder = deck[currentIndex];
+                deck[currentIndex] = deck[rand];
+                deck[rand] = holder;
+            }
 
-	            return deck;
+            return deck;
 
-	            }
+            }
 
-	        this.shuffle(deck);
+        this.shuffle(deck);
 
-    	}
+    }
 
 
         function Card(suit, rank) {
@@ -76,6 +76,7 @@
                     default:
                         rank = rank;
                         return rank;
+                        break;
                     case 11:
                         rank = "Jack";
                         return rank;
@@ -88,7 +89,7 @@
                     case 1:
                         rank = "Ace";
                         return rank;
-            	}
+                }
             }
 
             this.getSuit = function() {
@@ -105,7 +106,7 @@
                     case 4:
                         suit = "\u2660";
                         return suit;
-                }		
+                }       
             }
 
             this.getValue = function() {
@@ -118,7 +119,6 @@
                 return value;
                 
             }
-
         }
         
 
@@ -144,9 +144,9 @@
           }
 
             this.getFaceupcard = function() {
-            	 var result = "";
-            	 result += "| " + hand[0].getSuit() + hand[0].getValue() + " |";
-            	 return result; 
+                 var result = "";
+                 result += "| " + hand[0].getSuit() + hand[0].getValue() + " |";
+                 return result; 
             }
 
           this.hitMe = function(deck) {
@@ -156,10 +156,11 @@
           this.printHand = function() {
                 var hand_string = "";
 
-          		for (var i = 0; i < hand.length; i++) {
-                	hand_string += "|" + hand[i].getSuit() +
+                for (var i = 0; i < hand.length; i++) {
+                    hand_string += "|" + hand[i].getSuit() +
                     " " + hand[i].getNumber() + "| ";
-          		}
+
+                }
                 
                 return hand_string;
             }
@@ -176,105 +177,19 @@
                     } else {
                         score += hand[i].getValue();
                         }
-
                 return score;
             }
 
         }
 
-        /* test cases to see if Hand properly
-        gets its faceDownCard:
+var deck = new Deck();
+var card = deck.deal();
+var hand = new Hand(deck);
+//hand.hitMe();
 
-        var newHand = new Hand(newDeck);
-        console.log(newHand.getCard().getNumber());
-
-        */
-
-
-
-        function playAsDealer(deck) {
-            var dealerHand = new Hand(deck);
-            return dealerHand;
-        }
-
-        function playAsUser(deck) {
-            var userHand = new Hand(deck);
-            return userHand;
-        }
-
-        function secondDealing(userHand, dealerHand,deck) {
-            userHand.hitMe(deck);
-            dealerHand.hitMe(deck);
-        }
-
-
-        function declareWinner(userHand, dealerHand) {
-            if (dealerHand.score() > 21) {
-                return alert("You win! Dealer busted with a score of " + dealerHand.score());
-            } else if (userHand.score() > dealerHand.score()) {
-                return alert("You win! Dealer had a score of " + dealerHand.score());
-            } else if (userHand.score() < dealerHand.score()) {
-                return alert("You lose! The Dealer had a score of " + dealerHand.score());
-            } else if (userHand.score() == dealerHand.score()) {
-                return alert("You draw! Both you and the dealer had a score of " + dealerHand.score());
-            }
-        }
-
-		function bettingPhase(userHand, dealerHand, deck) {
-			$("#playerHand").html(userHand.printHand());
-		    var decision = confirm(
-		                           "for a score of " + userHand.score() + "." + 
-		                           " Dealer's faceup card is " + dealerHand.getFaceupcard() +
-		                           ". Press OK to hit, press cancel to stay.");
-		    while (decision) {
-		        userHand.hitMe(deck);
-		        decision = confirm($("#playerHand").text(userHand.printHand())) +
-		                           "for a score of " + userHand.score() + "." + 
-		                           " Dealer's faceup card is " + dealerHand.getFaceupcard() +
-		                           ". Press OK to hit, press cancel to stay.");
-
-		        if (userHand.score() > 21) {
-		            return endGame(userHand);
-		            }
-		    }
-		    
-		    while (dealerHand.score() < 17) {
-		        dealerHand.hitMe(deck);
-		    }
-		  
-		  declareWinner(userHand, dealerHand);
-
-		}
-
-        function endGame(userHand) {
-            alert("Player busts with a score of " + userHand.score());
-
-        }
-
-        function rematch() {
-          var replay = confirm("Another round?");
-          if (replay) {
-            return playGame();
-          }
-        }
-
-        function playGame() {
-            var Deck1 = new Deck();
-            var userHand = playAsUser(Deck1);
-            var dealerHand = playAsDealer(Deck1);
-
-            secondDealing(userHand,dealerHand,Deck1);
-            bettingPhase(userHand, dealerHand, Deck1);
-            rematch();
-
-          }
-
-        playGame();
-
-    });
+            $("#playerHand").html(hand.printHand());
 
 		</script>
-
-	</body>
-
+	
+    </body>
 </html>
