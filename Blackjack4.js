@@ -188,7 +188,7 @@ function declareWinner(userHand, dealerHand) {
         return alert("You win! Dealer had a score of " + dealerHand.score());
     } else if (userHand.score() < dealerHand.score()) {
         return alert("You lose! The Dealer had a score of " + dealerHand.score());
-    } else if (userHand.score() = dealerHand.score()) {
+    } else if (userHand.score() == dealerHand.score()) {
         return alert("You draw! Both you and the dealer had a score of " + dealerHand.score());
     }
 }
@@ -222,12 +222,21 @@ function endGame(userHand) {
 
 }
 
+function rematch() {
+  var replay = confirm("Another round?");
+  if (replay) {
+    return playGame();
+  }
+}
+
 function playGame() {
 	var Deck1 = new Deck();
     var userHand = playAsUser(Deck1);
     var dealerHand = playAsDealer(Deck1);
     secondDealing(userHand,dealerHand,Deck1);
-    bettingPhase(userHand, dealerHand, Deck1);    
+    bettingPhase(userHand, dealerHand, Deck1);
+    rematch();
+    
 }
 
 playGame();
