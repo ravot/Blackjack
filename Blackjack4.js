@@ -170,19 +170,8 @@ function playAsDealer(deck) {
     return dealerHand;
 }
 
-function playAsUser(deck, dealerHand) {
+function playAsUser(deck) {
     var userHand = new Hand(deck);
-    var decision = confirm(userHand.printHand() +
-                           "for a score of " + userHand.score() + "." + 
-                           " Dealer's faceup card is "  +
-                           ". Press OK to hit, press cancel to stay.");
-    while (decision) {
-        userHand.hitMe(deck);
-        decision = confirm(userHand.printHand() +
-                           "for a score of " + userHand.score() + "." + 
-                           " Dealer's faceup card is " +
-                           ". Press OK to hit, press cancel to stay.");
-    }
     return userHand;
 }
 
@@ -204,12 +193,29 @@ function declareWinner(userHand, dealerHand) {
     }
 }
 
-function playGame() {
-	var newDeck = new Deck();
-    var userHand = playAsUser(newDeck, dealerHand);
-    var dealerHand = playAsDealer(newDeck);
-    secondDealing(userHand,dealerHand,newDeck);
+function bettingPhase() {
+    var decision = confirm(userHand.printHand() +
+                           "for a score of " + userHand.score() + "." + 
+                           " Dealer's faceup card is "  +
+                           ". Press OK to hit, press cancel to stay.");
+    while (decision) {
+        userHand.hitMe(Deck1);
+        decision = confirm(userHand.printHand() +
+                           "for a score of " + userHand.score() + "." + 
+                           " Dealer's faceup card is " +
+                           ". Press OK to hit, press cancel to stay.");
+    }
 
+
+}
+
+function playGame() {
+	var Deck1 = new Deck();
+    var userHand = playAsUser(Deck1);
+    var dealerHand = playAsDealer(Deck1);
+    secondDealing(userHand,dealerHand,Deck1);
+    bettingPhase();
+    
     declareWinner(userHand, dealerHand);
 }
 
