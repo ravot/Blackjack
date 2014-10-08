@@ -18,7 +18,7 @@
 		<script>
 
 
-                    function Deck() {
+        function Deck() {
             var ranks = [1,2,3,4,5,6,7,8,9,10,11,12,13];
             var suits = [1,2,3,4];
             var deck = [];
@@ -29,34 +29,34 @@
                     }
                 }
 
-        this.getDeck = function() {
-          return deck;
-        }
-
-        this.deal = function() {
-          return deck.shift();
-        }
-
-        this.shuffle = function(deck) {
-            var currentIndex = deck.length, holder, rand;
-
-            while (0 !== currentIndex) {
-
-                rand = Math.floor(Math.random() * currentIndex);
-                currentIndex -= 1;
-
-                holder = deck[currentIndex];
-                deck[currentIndex] = deck[rand];
-                deck[rand] = holder;
+            this.getDeck = function() {
+              return deck;
             }
 
-            return deck;
-
+            this.deal = function() {
+              return deck.shift();
             }
 
-        this.shuffle(deck);
+            this.shuffle = function(deck) {
+                var currentIndex = deck.length, holder, rand;
 
-    }
+                while (0 !== currentIndex) {
+
+                    rand = Math.floor(Math.random() * currentIndex);
+                    currentIndex -= 1;
+
+                    holder = deck[currentIndex];
+                    deck[currentIndex] = deck[rand];
+                    deck[rand] = holder;
+                }
+
+                return deck;
+
+                }
+
+            this.shuffle(deck);
+
+        }
 
 
         function Card(suit, rank) {
@@ -76,7 +76,6 @@
                     default:
                         rank = rank;
                         return rank;
-                        break;
                     case 11:
                         rank = "Jack";
                         return rank;
@@ -136,24 +135,24 @@
 
 
         function Hand(deck) {
-          var hand = [];
-          hand[0] = deck.deal();
+            var hand = [];
+            hand[0] = deck.deal();
 
-          this.getHand = function() {
-            return hand;
-          }
-
-            this.getFaceupcard = function() {
-                 var result = "";
-                 result += "| " + hand[0].getSuit() + hand[0].getValue() + " |";
-                 return result; 
+            this.getHand = function() {
+                return hand;
             }
 
-          this.hitMe = function(deck) {
-            hand.push(deck.deal());
-              };
+            this.getFaceupcard = function() {
+                var result = "";
+                result += "| " + hand[0].getSuit() + hand[0].getValue() + " |";
+                return result; 
+            }
 
-          this.printHand = function() {
+            this.hitMe = function(deck) {
+                hand.push(deck.deal());
+            }
+
+            this.printHand = function() {
                 var hand_string = "";
 
                 for (var i = 0; i < hand.length; i++) {
@@ -161,33 +160,37 @@
                     " " + hand[i].getNumber() + "| ";
 
                 }
-                
+                    
                 return hand_string;
+
             }
-          
-          this.score = function() {
-                var score = 0;
-                for (var i = 0; i < hand.length; i++) 
-                    if (hand[i].getValue() == 11 &&
-                        score + hand[i].getValue() == 21) {
-                        return score = 21;
-                    } else if (hand[i].getValue() == 11 &&
-                                score + hand[i].getValue() > 21) {
-                        return score += 1;
-                    } else {
-                        score += hand[i].getValue();
-                        }
-                return score;
+              
+              this.score = function() {
+                    var score = 0;
+                    for (var i = 0; i < hand.length; i++) 
+                        if (hand[i].getValue() == 11 &&
+                            score + hand[i].getValue() == 21) {
+                            return score = 21;
+                        } else if (hand[i].getValue() == 11 &&
+                                    score + hand[i].getValue() > 21) {
+                            return score += 1;
+                        } else {
+                            score += hand[i].getValue();
+                            }
+                    return score;
+                }
+
             }
 
-        }
+var newDeck = new Deck();
+var card = newDeck.deal();
+var myHand = new Hand(newDeck);
+var dealHand = new Hand(newDeck);
 
-var deck = new Deck();
-var card = deck.deal();
-var hand = new Hand(deck);
-//hand.hitMe();
+myHand.hitMe(newDeck);
 
-            $("#playerHand").html(hand.printHand());
+            $("#playerHand").text(myHand.printHand());
+            $("#dealerHand").text(dealHand.printHand());
 
 		</script>
 	

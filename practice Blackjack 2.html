@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+	<head>
+			<h3>Your hand </h3>
+			<p id="playerHand"></p>
+
+    		<button id = "hitButton"> Hit </button>
+
+            <button id = "stayButton"> Stay </button>
+
+			<h3>Dealer's hand </h3>
+			<p id="dealerHand"></p>
+
+            <p id="messageBox"></p>
+
+	</head>
+
+	<body>
+
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+		<script>
+
+		$(document).ready(function() {
+			
+		function Deck() {
+            var ranks = [1,2,3,4,5,6,7,8,9,10,11,12,13];
+            var suits = [1,2,3,4];
+            var deck = [];
+
+            for (var s = 1; s <= suits.length; s++) {
+                for (var r = 1; r <= ranks.length; r++) {
+                    deck.push(new Card(s, r));
+                }
+            }
+
+	        this.getDeck = function() {
+	          return deck;
+	        }
+
+	        this.deal = function() {
+	          return deck.shift();
+	        }
+
+	        this.shuffle = function(deck) {
+	            var currentIndex = deck.length, holder, rand;
+
+	            while (0 !== currentIndex) {
+
+	                rand = Math.floor(Math.random() * currentIndex);
+	                currentIndex -= 1;
+
+	                holder = deck[currentIndex];
+	                deck[currentIndex] = deck[rand];
+	                deck[rand] = holder;
+	            }
+
+	            return deck;
+
+	            }
+
+	        this.shuffle(deck);
+
+    	}
+
+
+        function Card(suit, rank) {
+            var suit = suit, rank = rank;
+            
+            this.getNumber = function() {
+                switch(rank) {
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    default:
+                        rank = rank;
+                        return rank;
+                    case 11:
+                        rank = "Jack";
+                        return rank;
+                    case 12:
+                        rank = "Queen";
+                        return rank;;
+                    case 13:
+                        rank = "King";
+                        return rank;
+                    case 1:
+                        rank = "Ace";
+                        return rank;
+            	}
+            }
+
+            this.getSuit = function() {
+                switch(suit) {
+                    case 1:
+                        suit = "\u2666";
+                        return suit;
+                    case 2:
+                        suit = "\u2663";
+                        return suit;
+                    case 3:
+                        suit = "\u2665";
+                        return suit;
+                    case 4:
+                        suit = "\u2660";
+                        return suit;
+                }		
+            }
+
+            this.getValue = function() {
+                var value = this.getNumber();
+                if (value == "Jack" || value == "Queen" || value == "King") {
+                    value = 10;
+                } else if (value == "Ace") {
+                    value = 11;
+                }
+                return value;
+            }
+
+        }
+        
+
+
+        /* test cases to see if deck and cards are properly made,
+        and to see if deal shifts the deck properly:
+
+        var newDeck = new Deck();
+        console.log(newDeck.getDeck()[0].getNumber());
+        console.log(newDeck.getDeck()[1].getNumber());
+
+        var newCard = newDeck.deal();
+        console.log(newCard.getNumber());
+        */
+
+
+        function Hand(deck) {
+            var hand = [];
+            hand[0] = deck.deal();
+
+            this.getFaceupcard = function() {
+            	 var result = "";
+            	 result += "| " + hand[0].getSuit() + hand[0].getValue() + " |";
+            	 return result; 
+            }
+
+            this.hitMe = function(deck) {
+                hand.push(deck.deal());
+            };
+
+            this.printHand = function() {
+                var hand_string = "";
+
+          		for (var i = 0; i < hand.length; i++) {
+                	hand_string += "|"      +
+                    " " + hand[i].getNumber() + "| ";
+          		}
+                
+                return hand_string;
+            }
+          
+            this.score = function() {
+                var score = 0;
+                for (var i = 0; i < hand.length; i++) 
+                    if (hand[i].getValue() == 11 &&
+                        score + hand[i].getValue() == 21) {
+                        return score = 21;
+                    } else if (hand[i].getValue() == 11 &&
+                                score + hand[i].getValue() > 21) {
+                        return score += 1;
+                    } else {
+                        score += hand[i].getValue();
+                        }
+
+                return score;
+            }
+
+        }
+
+        /* test cases to see if Hand properly
+        gets its faceDownCard:
+
+        var newHand = new Hand(newDeck);
+        console.log(newHand.getCard().getNumber());
+
+        */
+
+
+
+        function playAsDealer(deck) {
+            var dealerHand = new Hand(deck);
+            return dealerHand;
+        }
+
+        function playAsUser(deck) {
+            var userHand = new Hand(deck);
+            return userHand;
+        }
+
+        function secondDealing(userHand, dealerHand,deck) {
+            userHand.hitMe(deck);
+            dealerHand.hitMe(deck);
+        }
+
+
+        function declareWinner(userHand, dealerHand) {
+            if (dealerHand.score() > 21) {
+                $("#messageBox").text("You win! Dealer busted with a score of " + dealerHand.score());
+            } else if (userHand.score() > dealerHand.score()) {
+                $("#messageBox").text("You win! Dealer had a score of " + dealerHand.score());
+            } else if (userHand.score() < dealerHand.score()) {
+                $("#messageBox").text("You lose! The Dealer had a score of " + dealerHand.score());
+            } else if (userHand.score() == dealerHand.score()) {
+                $("#messageBox").text("You draw! Both you and the dealer had a score of " + dealerHand.score());
+            }
+
+        }
+
+  
+		function bettingPhase(userHand, dealerHand, deck) {
+            $("#playerHand").html(userHand.printHand());
+            $("#dealerHand").html(dealerHand.getFaceupcard());
+
+            $("#hitButton").on( "click", function() {
+                    userHand.hitMe(deck);
+                    $("#playerHand").html(userHand.printHand());
+                    $("#messageBox").text("You have a score of " + userHand.score() + ". Dealer has a score of " + dealerHand.score());
+                });
+                $("#stayButton").on( "click", function() {
+                    $("#playerHand").html(userHand.printHand());
+                    $("#messageBox").text("You have a score of " + userHand.score() + ". Dealer has a score of " + dealerHand.score());
+                });
+
+            while (dealerHand.score() < 17) {
+                dealerHand.hitMe(deck);
+            }
+          
+            declareWinner(userHand, dealerHand);
+
+            }
+
+            //show dealer's faceup card
+            //allow player to be dealt more cards
+            //check score total after every hit
+            //bust or blackjack as appropriate
+            //move onto dealer's moves if the player decides to stay
+
+            /*
+            if (userHand.score() > 21) {
+                return endGame(userHand);
+                }
+                    
+            while (dealerHand.score() < 17) {
+                dealerHand.hitMe(deck);
+            }
+            */
+ 
+
+        function endGame(userHand) {
+            return $("#messageBox").text("You bust! You had a score of " + userHand.score());
+
+        }
+
+        function rematch() {
+            var replay = confirm("Another round?");
+            if (replay) {
+                return playGame();
+            }
+        }
+
+        function playGame() {
+            var Deck1 = new Deck();
+            var userHand = playAsUser(Deck1);
+            var dealerHand = playAsDealer(Deck1);
+
+            secondDealing(userHand, dealerHand, Deck1);
+            bettingPhase(userHand, dealerHand, Deck1);
+
+          }
+
+        playGame();
+
+    });
+
+		</script>
+
+	</body>
+
+</html>
