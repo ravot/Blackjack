@@ -8,6 +8,8 @@
 
             <button id = "stayButton"> Stay </button>
 
+            <button id = "replayButton"> Replay </button>
+
 			<h3>Dealer's hand </h3>
 			<p id="dealerHand"></p>
 
@@ -22,6 +24,11 @@
 		<script>
 
 		$(document).ready(function() {
+
+        $("#replayButton").on("click", function() {
+
+            rematch();
+        })
 			
 		function Deck() {
             var ranks = [1,2,3,4,5,6,7,8,9,10,11,12,13];
@@ -67,7 +74,7 @@
         function Card(suit, rank) {
             var suit = suit, rank = rank;
             
-            this.getNumber = function() {
+            this.getRank = function() {
                 switch(rank) {
                     case 2:
                     case 3:
@@ -79,7 +86,6 @@
                     case 9:
                     case 10:
                     default:
-                        rank = rank;
                         return rank;
                     case 11:
                         rank = "Jack";
@@ -112,15 +118,15 @@
                         return suit;
                 }		
             }
-
+ 
             this.getValue = function() {
-                var value = this.getNumber();
-                if (value == "Jack" || value == "Queen" || value == "King") {
-                    value = 10;
-                } else if (value == "Ace") {
-                    value = 11;
+                var rank = this.getRank();
+                if (rank == "Jack" || rank == "Queen" || rank == "King") {
+                    rank = 10;
+                } else if (rank == "Ace") {
+                    rank = 11;
                 }
-                return value;
+                return rank;
             }
 
         }
@@ -145,7 +151,7 @@
 
             this.getFaceupcard = function() {
             	 var result = "";
-            	 result += "| " + hand[0].getSuit() + hand[0].getValue() + " |";
+            	 result += "|" + hand[0].getSuit() + hand[0].getRank() + "| ";
             	 return result; 
             }
 
@@ -157,8 +163,8 @@
                 var hand_string = "";
 
           		for (var i = 0; i < hand.length; i++) {
-                	hand_string += "|"      +
-                    " " + hand[i].getNumber() + "| ";
+                	hand_string += "|" + hand[i].getSuit() + 
+                    " " + hand[i].getRank() + "| ";
           		}
                 
                 return hand_string;
@@ -229,21 +235,26 @@
             $("#hitButton").on( "click", function() {
                     userHand.hitMe(deck);
                     $("#playerHand").html(userHand.printHand());
-                    $("#messageBox").text("You have a score of " + userHand.score() + ". Dealer has a score of " + dealerHand.score());
-                });
-                $("#stayButton").on( "click", function() {
-                    $("#playerHand").html(userHand.printHand());
-                    $("#messageBox").text("You have a score of " + userHand.score() + ". Dealer has a score of " + dealerHand.score());
-                });
+                    $("#messageBox").html("You have a score of " + userHand.score() +
+                     ". Dealer has a score of " + dealerHand.score());
+            }); 
 
-            while (dealerHand.score() < 17) {
-                dealerHand.hitMe(deck);
-            }
+            $("#stayButton").on( "click", function() {
+                $("#playerHand").html(userHand.printHand());
+                $("#messageBox").text("You have a score of " + userHand.score() + ". Dealer has a score of " + dealerHand.score());
+
+                while (dealerHand.score() < 17) {
+                    dealerHand.hitMe(deck);
+                }
           
-            declareWinner(userHand, dealerHand);
+            });
 
-            }
+            return declareWinner(userHand, dealerHand);
 
+
+        }
+
+           
             //show dealer's faceup card
             //allow player to be dealt more cards
             //check score total after every hit
@@ -267,10 +278,7 @@
         }
 
         function rematch() {
-            var replay = confirm("Another round?");
-            if (replay) {
-                return playGame();
-            }
+            return playGame();
         }
 
         function playGame() {
