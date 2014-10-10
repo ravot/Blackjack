@@ -29,7 +29,7 @@
         $("#replayButton").on("click", function() {
 
             rematch();
-        })
+        });
 			
 		function Deck() {
             var ranks = [1,2,3,4,5,6,7,8,9,10,11,12,13];
@@ -232,11 +232,10 @@
 
 
         function declareWinner(userHand, dealerHand) {
-            if (userHand.getStatus() == 1 && dealerHand.getStatus()) {
             if (dealerHand.score() > 21) {
                 $("#dealerHand").html(dealerHand.printHand());
                 return $("#messageBox").text("You win! Dealer busted with a score of " + dealerHand.score());
-            } else if (userHand.score() < 21 && userHand.score() > dealerHand.score()) {
+            } else if (userHand.score() > dealerHand.score()) {
                 $("#dealerHand").html(dealerHand.printHand());
                 return $("#messageBox").text("You win! Dealer had a score of " + dealerHand.score());
             } else if (userHand.score() < dealerHand.score()) {
@@ -246,7 +245,7 @@
                 $("#dealerHand").html(dealerHand.printHand());
                 return $("#messageBox").text("Push! Both you and the dealer had a score of " + dealerHand.score());
             }
-            }
+            
 
         }
 
@@ -271,19 +270,21 @@
 
                 });
 
-                $("#stayButton").on("click", function() {
+                $("#stayButton").on("click", function() {                    
                     $("#hitButton").unbind();
-                    userHand.setStatus(1);
                     $("#stayButton").unbind();
-                    return dealerTurn();
+                    userHand.setStatus(1);
+                    return dealerTurn(userHand, dealerHand, deck);
                          
 
                 });
+            } else if (userHand.score() > 21) {
+                return endGame(userHand);
             }
         }
 
         function dealerTurn(userHand, dealerHand, deck) {
-            if (userHand.getStatus() == 1) {
+            if (userHand.getStatus()) {
                 while (dealerHand.score() < 17) {
                     dealerHand.hitMe(deck);
                 }
@@ -293,15 +294,16 @@
                 }
             }
 
+
+            if (userHand.getStatus() && dealerHand.getStatus()) {
+                return declareWinner(userHand, dealerHand);
+
+            }
+
         }
      
   
-		function gameRound(userHand, dealerHand, deck) {
-            playerTurn(userHand, dealerHand, deck);
-
-        }
-
-           
+          
             //show dealer's faceup card
             //allow player to be dealt more cards
             //check score total after every hit
@@ -329,7 +331,7 @@
         }
 
         function rematch() {
-            return playGame();
+            return new playGame();
         }
 
         function playGame() {
@@ -338,9 +340,8 @@
             var dealerHand = playAsDealer(Deck1);
 
             secondDealing(userHand, dealerHand, Deck1);
-            gameRound(userHand, dealerHand, Deck1);
-
-            declareWinner(userHand, dealerHand);
+            playerTurn(userHand, dealerHand, Deck1);
+            dealerTurn(userHand, dealerHand, Deck1);
 
           }
 
