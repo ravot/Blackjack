@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+	<head>
+          <meta charset="UTF-8">
+
+			<h3>Your hand </h3>
+			<p id="playerHand"></p>
+
+    		<button id = "hitButton"> Hit </button>
+
+            <button id = "stayButton"> Stay </button>
+
+            <button id = "replayButton"> Replay </button>
+
+			<h3>Dealer's hand </h3>
+			<p id="dealerHand" style="font-size:160%"></p>
+
+            <p id="messageBox"></p>
+
+	</head>
+
+	<body>
+
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+		<script>
+
+        function Deck() {
+            var ranks = [1,2,3,4,5,6,7,8,9,10,11,12,13];
+            var suits = [1,2,3,4];
+            var deck = [];
+
+            for (var s = 1; s <= suits.length; s++) {
+                for (var r = 1; r <= ranks.length; r++) {
+                    deck.push(new Card(s, r));
+                }
+            }
+
+            this.getDeck = function() {
+              return deck;
+            }
+
+            this.deal = function() {
+              return deck.shift();
+            }
+
+            this.shuffle = function(deck) {
+                var currentIndex = deck.length, holder, rand;
+
+                while (0 !== currentIndex) {
+
+                    rand = Math.floor(Math.random() * currentIndex);
+                    currentIndex -= 1;
+
+                    holder = deck[currentIndex];
+                    deck[currentIndex] = deck[rand];
+                    deck[rand] = holder;
+                }
+
+                return deck;
+
+                }
+
+            this.shuffle(deck);
+
+        }
+
+
+        function Card(suit, rank) {
+            var suit = suit, rank = rank;
+            
+            this.getRank = function() {
+                switch(rank) {
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    default:
+                        return rank;
+                    case 11:
+                        rank = "Jack";
+                        return rank;
+                    case 12:
+                        rank = "Queen";
+                        return rank;;
+                    case 13:
+                        rank = "King";
+                        return rank;
+                    case 1:
+                        rank = "Ace";
+                        return rank;
+                }
+            }
+
+            this.getSuit = function() {
+                switch(suit) {
+                    default:
+                        return suit;
+                    case 1:
+                        suit = "\u2666";
+                        return suit;
+                    case 2:
+                        suit = "\u2663";
+                        return suit;
+                    case 3:
+                        suit = "\u2665";
+                        return suit;
+                    case 4:
+                        suit = "\u2660";
+                        return suit;
+                }       
+            }
+ 
+            this.getValue = function() {
+                var rank = this.getRank();
+                if (rank == "Jack" || rank == "Queen" || rank == "King") {
+                    rank = 10;
+                } else if (rank == "Ace") {
+                    rank = 11;
+                } else {
+                    rank = rank;
+                }
+                return rank;
+            }
+
+        }
+        
+
+
+        /* test cases to see if deck and cards are properly made,
+        and to see if deal shifts the deck properly:
+
+        var newDeck = new Deck();
+        console.log(newDeck.getDeck()[0].getNumber());
+        console.log(newDeck.getDeck()[1].getNumber());
+
+        var newCard = newDeck.deal();
+        console.log(newCard.getNumber());
+        */
+
+
+        function Hand(deck) {
+            var hand = [];
+            hand[0] = deck.deal();
+
+            this.getFaceupcard = function() {
+                 var result = "";
+                 result += "|" + hand[0].getSuit() + hand[0].getRank() + "| ";
+                 return result; 
+            }
+
+            this.addCard = function(card) {
+                hand.push(card);
+            }
+
+            this.hitMe = function(deck) {
+                hand.push(deck.deal());
+            };
+
+            this.printHand = function() {
+                var hand_string = "";
+
+                for (var i = 0; i < hand.length; i++) {
+                    hand_string += "|" + hand[i].getSuit() + 
+                    " " + hand[i].getRank() + "| ";
+                }
+                
+                return hand_string;
+            }
+          
+            this.score = function() {
+                var score = 0;
+                for (var i = 0; i < hand.length; i++) 
+                    if (hand[i].getValue() == 11 &&
+                        score + hand[i].getValue() == 21) {
+                        return score = 21;
+                    } else if (hand[i].getValue() == 11 &&
+                                score + hand[i].getValue() > 21) {
+                        return score += 1;
+                    } else {
+                        score += hand[i].getValue();
+                        }
+
+                return score;
+            }
+
+        }
+
+var Deck1 = new Deck();
+var playerHand = new Hand(Deck1);
+playerHand.hitMe(Deck1);
+playerHand.hitMe(Deck1);
+playerHand.hitMe(Deck1);
+playerHand.hitMe(Deck1);
+playerHand.hitMe(Deck1);
+playerHand.hitMe(Deck1);
+playerHand.hitMe(Deck1);
+playerHand.hitMe(Deck1);
+playerHand.hitMe(Deck1);
+playerHand.hitMe(Deck1);
+playerHand.hitMe(Deck1);
+playerHand.hitMe(Deck1);
+
+
+        $("#hitButton").on("click", function() {
+            $("#messageBox").text(playerHand.printHand());
+            
+        });
+
+        $("#stayButton").on("click", function() {
+            $("#messageBox").text("stay");
+            $("#hitButton").unbind();
+        });
+
+    
+
+		</script>
+
+	</body>
+
+</html>
+
