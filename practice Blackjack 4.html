@@ -2,9 +2,7 @@
 <html>
 	<head>
 			<h3>Your hand </h3>
-			<p id="playerHand" style="font-size:160%"></p>
-
-            <p id="messageBox" style="font-size:160%"></p>
+			<p id="playerHand"></p>
 
     		<button id = "hitButton"> Hit </button>
 
@@ -13,8 +11,9 @@
             <button id = "replayButton"> Replay </button>
 
 			<h3>Dealer's hand </h3>
-			<p id="dealerHand" style="font-size:160%"></p>
+			<p id="dealerHand"></p>
 
+            <p id="messageBox"></p>
 
 	</head>
 
@@ -128,8 +127,6 @@
                     rank = 10;
                 } else if (rank == "Ace") {
                     rank = 11;
-                } else {
-                    rank = rank;
                 }
                 return rank;
             }
@@ -151,25 +148,13 @@
 
 
         function Hand(deck) {
-            var hand = [], status = 0;
+            var hand = [];
             hand[0] = deck.deal();
 
             this.getFaceupcard = function() {
             	 var result = "";
             	 result += "|" + hand[0].getSuit() + hand[0].getRank() + "| ";
             	 return result; 
-            }
-
-            this.setStatus = function(newStatus) {
-                status = newStatus;
-            }
-
-            this.getStatus = function() {
-                return status;
-            }
-
-            this.addCard = function(card) {
-                hand.push(card);
             }
 
             this.hitMe = function(deck) {
@@ -232,72 +217,42 @@
 
 
         function declareWinner(userHand, dealerHand) {
-            if (userHand.getStatus() == 1 && dealerHand.getStatus()) {
             if (dealerHand.score() > 21) {
-                $("#dealerHand").html(dealerHand.printHand());
-                return $("#messageBox").text("You win! Dealer busted with a score of " + dealerHand.score());
-            } else if (userHand.score() < 21 && userHand.score() > dealerHand.score()) {
-                $("#dealerHand").html(dealerHand.printHand());
-                return $("#messageBox").text("You win! Dealer had a score of " + dealerHand.score());
+                $("#messageBox").text("You win! Dealer busted with a score of " + dealerHand.score());
+            } else if (userHand.score() > dealerHand.score()) {
+                $("#messageBox").text("You win! Dealer had a score of " + dealerHand.score());
             } else if (userHand.score() < dealerHand.score()) {
-                $("#dealerHand").html(dealerHand.printHand());
-                return $("#messageBox").text("You lose! The Dealer had a score of " + dealerHand.score());
+                $("#messageBox").text("You lose! The Dealer had a score of " + dealerHand.score());
             } else if (userHand.score() == dealerHand.score()) {
-                $("#dealerHand").html(dealerHand.printHand());
-                return $("#messageBox").text("Push! Both you and the dealer had a score of " + dealerHand.score());
-            }
+                $("#messageBox").text("You draw! Both you and the dealer had a score of " + dealerHand.score());
             }
 
         }
 
+  
+		function bettingPhase(userHand, dealerHand, deck) {
+            $("#playerHand").html(userHand.printHand());
+            $("#dealerHand").html(dealerHand.getFaceupcard());
 
-        function playerTurn(userHand, dealerHand, deck) {
-            $("#messageBox").text("You have a score of " + userHand.score() + ". Would you like to hit or stay?");
-            $("#playerHand").text(userHand.printHand());
-            $("#dealerHand").text(dealerHand.getFaceupcard());
-
-            if (userHand.score() < 21) {
-
-                $("#hitButton").click( function() {
+            $("#hitButton").on( "click", function() {
                     userHand.hitMe(deck);
-                    $("#playerHand").text(userHand.printHand());
+                    $("#playerHand").html(userHand.printHand());
+                    $("#messageBox").html("You have a score of " + userHand.score() +
+                     ". Dealer has a score of " + dealerHand.score());
+            }); 
 
-                    if (userHand.score > 21) {
-                        $("#hitButton").unbind();
-                        return $("#messageBox").text("You bust with a score of " + userHand.score() + "!");
-                    } else {
-                        return playerTurn(userHand, dealerHand, deck);
-                    }
+            $("#stayButton").on( "click", function() {
+                $("#playerHand").html(userHand.printHand());
+                $("#messageBox").text("You have a score of " + userHand.score() + ". Dealer has a score of " + dealerHand.score());
 
-                });
-
-                $("#stayButton").on("click", function() {
-                    $("#hitButton").unbind();
-                    userHand.setStatus(1);
-                    $("#stayButton").unbind();
-                    return dealerTurn();
-                         
-
-                });
-            }
-        }
-
-        function dealerTurn(userHand, dealerHand, deck) {
-            if (userHand.getStatus() == 1) {
                 while (dealerHand.score() < 17) {
                     dealerHand.hitMe(deck);
                 }
+          
+            });
 
-                if (dealerHand.score() > 17) {
-                    dealerHand.setStatus(1);
-                }
-            }
+            return declareWinner(userHand, dealerHand);
 
-        }
-     
-  
-		function gameRound(userHand, dealerHand, deck) {
-            playerTurn(userHand, dealerHand, deck);
 
         }
 
@@ -317,14 +272,10 @@
                 dealerHand.hitMe(deck);
             }
             */
-        // allow player to hit whenever, but always execute a check as the first part of
-        // the event handler for the hit. If the hit makes the player bust, end the game.
-        // else, add the card to the player's hand. If the cards come out to 21, end the players turn
-        
  
 
         function endGame(userHand) {
-            return $("#messageBox").html("You bust! You had a score of " + userHand.score());
+            return $("#messageBox").text("You bust! You had a score of " + userHand.score());
 
         }
 
@@ -338,9 +289,7 @@
             var dealerHand = playAsDealer(Deck1);
 
             secondDealing(userHand, dealerHand, Deck1);
-            gameRound(userHand, dealerHand, Deck1);
-
-            declareWinner(userHand, dealerHand);
+            bettingPhase(userHand, dealerHand, Deck1);
 
           }
 
@@ -353,4 +302,3 @@
 	</body>
 
 </html>
-
