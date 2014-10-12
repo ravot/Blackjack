@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-			<h3>Your hand </h3>
-			<p id="playerHand"></p>
+			<h2>Your hand </h2>
+			<p id="playerHand" style="font-size:130%"></p>
 
     		<button id = "hitButton"> Hit </button>
 
@@ -10,10 +10,10 @@
 
             <button id = "replayButton"> Replay </button>
 
-			<h3>Dealer's hand </h3>
-			<p id="dealerHand"></p>
+			<h2>Dealer's hand </h2>
+			<p id="dealerHand" style="font-size:130%"></p>
 
-            <p id="messageBox"></p>
+            <p id="messageBox" style="font-size:130%"></p>
 
 	</head>
 
@@ -257,6 +257,8 @@
             $("#playerHand").text(userHand.printHand());
             $("#dealerHand").text(dealerHand.getFaceupcard());
 
+            $("#messageBox").text("You have a score of " + userHand.getScore() + ".");
+
             if (userHand.getScore() > 21 ) {
 
                 if (userHand.getAced()) {
@@ -293,6 +295,7 @@
 
                 $("#stayButton").on("click", function() {
                     console.log("staybutton clicked");
+                    $("#hitButton").unbind();
                     return dealerTurn(userHand, dealerHand, deck);
 
 
