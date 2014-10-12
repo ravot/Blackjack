@@ -127,6 +127,8 @@
                     rank = 10;
                 } else if (rank == "Ace") {
                     rank = 11;
+                } else {
+                    rank = rank;
                 }
                 return rank;
             }
@@ -148,8 +150,7 @@
 
 
         function Hand(deck) {
-            var hand = [], score = 0, aced = 0;
-            hand[0] = deck.deal();
+            var hand = [], aced = 0, score = 0;
 
             this.getFaceupcard = function() {
             	 var result = "";
@@ -158,8 +159,19 @@
             }
 
             this.hitMe = function(deck) {
-                hand.push(deck.deal());
+                var card = deck.deal();
+                score += card.getValue();
+
+                if (card.getRank() == "Ace") {
+                    aced ++;
+                    console.log("aced found");
+                }
+                hand.push(card);
+
             };
+
+            this.hitMe(deck);
+
 
             this.printHand = function() {
                 var hand_string = "";
@@ -172,40 +184,31 @@
                 return hand_string;
             }
 
-            this.setAced = function() {
-                for (var i = 0; i < hand.length; i++) {
-                    if (hand[i].getRank() == "Ace") {
-                        aced ++;
-                    }
-                }
-            }
-
             this.getAced = function() {
                 return aced;
             }
-
+/*
             this.decreaseScoreWithAce = function() {
                 score -= 10;
                 aced--;
             }
-          
-            this.score = function() {
-                for (var i = 0; i < hand.length; i++) 
-                    if (hand[i].getValue() == 11 &&
-                        score + hand[i].getValue() == 21) {
-                        return score = 21;
-                    } else if (hand[i].getValue() == 11 &&
-                                score + hand[i].getValue() > 21) {
-                        return score += 1;
-                    } else {
-                        score += hand[i].getValue();
-                        }
+  */        
 
+            this.getScore = function() {
                 return score;
             }
 
-        }
+            this.aceScore = function() {
+                if (aced) {
+                    score -= 10;
+                    aced--;
+                }
+                else {
+                    return;
+                }
+            }
 
+        }
         /* test cases to see if Hand properly
         gets its faceDownCard:
 
@@ -233,54 +236,83 @@
 
 
         function declareWinner(userHand, dealerHand) {
-            if (dealerHand.score() > 21) {
-                $("#messageBox").text("You win! Dealer busted with a score of " + dealerHand.score());
-            } else if (userHand.score() > dealerHand.score()) {
-                $("#messageBox").text("You win! Dealer had a score of " + dealerHand.score());
-            } else if (userHand.score() < dealerHand.score()) {
-                $("#messageBox").text("You lose! The Dealer had a score of " + dealerHand.score());
-            } else if (userHand.score() == dealerHand.score()) {
-                $("#messageBox").text("You draw! Both you and the dealer had a score of " + dealerHand.score());
+            $("#playerHand").text(userHand.printHand());
+            $("#dealerHand").text(dealerHand.printHand());
+
+            if (dealerHand.getScore() > 21) {
+                $("#messageBox").text("You win! You had a score of " + userHand.getScore() + " and the Dealer busted with a score of " + dealerHand.getScore());
+            } else if (userHand.getScore() > dealerHand.getScore()) {
+                $("#messageBox").text("You win! You had a score of " + userHand.getScore() + " and the Dealer had a score of " + dealerHand.getScore());
+            } else if (userHand.getScore() < dealerHand.getScore()) {
+                $("#messageBox").text("You lose! You had a score of " + userHand.getScore() + " and the Dealer had a score of " + dealerHand.getScore());
+            } else if (userHand.getScore() == dealerHand.getScore()) {
+                $("#messageBox").text("You draw! You had a score of " + userHand.getScore() + " and the dealer had a score of " + dealerHand.getScore());
             }
 
         }
 
   
 		function playingPhase(userHand, dealerHand, deck) {
-            userHand.setAced();
-            dealerHand.setAced();
 
-            //show your hand
-            //show dealer faceupcard
+            $("#playerHand").text(userHand.printHand());
+            $("#dealerHand").text(dealerHand.getFaceupcard());
 
-            //check if user > 21 (this is a termination condition to 
-                // catch bad scores when the function is called recursively)
+            if (userHand.getScore() > 21 ) {
 
-            if (userHand.score() > 21 ) {
-                if (userHand.)
-                //oh shit, remember to check if user hand has Aced. if user hand has aces, subtract
-                //10 from users score, then subtract one from aced.
-                //recursive call to playingPhase with the updated userHand
+                if (userHand.getAced()) {
+                    userHand.aceScore();
+                    return playingPhase(userHand, dealerHand, deck);
+                }
 
-                //else if no aced
+                else if (userHand.getAced() == 0) {
+                    $("#hitButton").unbind();
+                    $("#stayButton").unbind();
+                    return endGame(userHand);
+                }
 
-                //disable hit and stay buttons
-                //return endgame
-                return endGame();
-            } 
-            //else if userhand.score == 21, immediately proceed to
-            //the dealer's turn, disable the player's hit and stay buttons
+            }
 
-            //else if userhand score < 21, let the player decide whether to hit or stay
-            //hitting behavior: if player hits, the deck deals the user another card, then
-            //buttons are disabled. Since userHand has been updated, we can proceed to 
-            //do a recursive call to playingPhase with the new userHand.
+            else if (userHand.getScore() == 21) {
+                $("#hitButton").unbind();
+                $("#stayButton").unbind();
+                return dealerTurn(userHand, dealerHand, deck);
+            }
 
-            //staying behavior; if player stays, the hit and stay buttons are disabled
-            //and the game proceeds to the dealer's turn          
+            else {
+                console.log("exected");
+
+                $("#hitButton").on("click", function() {
+                    console.log("hitbutton clicked");
+                    userHand.hitMe(deck);
+                    $("#hitButton").unbind();
+                    console.log("hitbutton unbinded");
+
+                    return playingPhase(userHand, dealerHand, deck);
+
+                });
+
+                $("#stayButton").on("click", function() {
+                    console.log("staybutton clicked");
+                    return dealerTurn(userHand, dealerHand, deck);
 
 
-        }
+                });
+                    
+
+            }
+                
+        } 
+          
+        function dealerTurn(userHand, dealerHand, deck) {
+                while (dealerHand.getScore() < 17) {
+                    dealerHand.hitMe(deck);
+                }
+
+                return declareWinner(userHand, dealerHand);
+
+            }
+
+        
         
 
 
@@ -304,11 +336,12 @@
  
 
         function endGame(userHand) {
-            return $("#messageBox").text("You bust! You had a score of " + userHand.score());
+            return $("#messageBox").text("You bust! You had a score of " + userHand.getScore());
 
         }
 
         function rematch() {
+            $("#messageBox").text("");
             return playGame();
         }
 
@@ -318,6 +351,7 @@
             var dealerHand = playAsDealer(Deck1);
 
             secondDealing(userHand, dealerHand, Deck1);
+
             playingPhase(userHand, dealerHand, Deck1);
 
           }
