@@ -136,19 +136,6 @@
         }
         
 
-
-        /* test cases to see if deck and cards are properly made,
-        and to see if deal shifts the deck properly:
-
-        var newDeck = new Deck();
-        console.log(newDeck.getDeck()[0].getNumber());
-        console.log(newDeck.getDeck()[1].getNumber());
-
-        var newCard = newDeck.deal();
-        console.log(newCard.getNumber());
-        */
-
-
         function Hand(deck) {
             var hand = [], aced = 0, score = 0;
 
@@ -187,12 +174,7 @@
             this.getAced = function() {
                 return aced;
             }
-/*
-            this.decreaseScoreWithAce = function() {
-                score -= 10;
-                aced--;
-            }
-  */        
+
 
             this.getScore = function() {
                 return score;
@@ -209,15 +191,7 @@
             }
 
         }
-        /* test cases to see if Hand properly
-        gets its faceDownCard:
-
-        var newHand = new Hand(newDeck);
-        console.log(newHand.getCard().getNumber());
-
-        */
-
-
+      
 
         function playAsDealer(deck) {
             var dealerHand = new Hand(deck);
@@ -307,8 +281,22 @@
         } 
           
         function dealerTurn(userHand, dealerHand, deck) {
-                while (dealerHand.getScore() < 17) {
+
+                if (dealerHand.getScore() < 17) {
                     dealerHand.hitMe(deck);
+                    return dealerTurn(userHand, dealerHand, deck);
+                }
+
+                else if (dealerHand.getScore() > 17) {
+
+                    if (dealerHand.getScore() > userHand.getScore()) {
+                        return declareWinner(userHand, dealerHand);
+                    }
+
+                    else if (dealerHand.getAced()) {
+                        dealerHand.aceScore();
+                        return dealerTurn(userHand, dealerHand, deck);
+                    }
                 }
 
                 return declareWinner(userHand, dealerHand);
@@ -316,28 +304,6 @@
             }
 
         
-        
-
-
-        
-           
-            //show dealer's faceup card
-            //allow player to be dealt more cards
-            //check score total after every hit
-            //bust or blackjack as appropriate
-            //move onto dealer's moves if the player decides to stay
-
-            /*
-            if (userHand.score() > 21) {
-                return endGame(userHand);
-                }
-                    
-            while (dealerHand.score() < 17) {
-                dealerHand.hitMe(deck);
-            }
-            */
- 
-
         function endGame(userHand) {
             return $("#messageBox").text("You bust! You had a score of " + userHand.getScore());
 
