@@ -204,15 +204,10 @@
             }
           
             this.score = function() {
-                for (var i = 0; i < hand.length; i++)
-                    if (hand[i].getValue() == 11) {
-                        score += 11;
-                    } else {
-                        console.log("score of: " + hand[i].getValue() + " added"); 
-                        score += hand[i].getValue();
-                    }   
-                    console.log("scoring exected");
-                return score;
+                for (var i = 0; i < hand.length; i++) {
+                    score += hand[i].getValue();
+                }
+
             }
 
         }
@@ -245,103 +240,22 @@
 
         function declareWinner(userHand, dealerHand) {
 
-            if (dealerHand.score() > 21) {
-                $("#hitButton").unbind();
-                $("#stayButton").unbind();
-                $("#dealerHand").html(dealerHand.printHand());
-                return $("#messageBox").text("You win! Dealer busted with a score of " + dealerHand.score());
-            } else if (userHand.score() > dealerHand.score()) {
-                $("#hitButton").unbind();
-                $("#stayButton").unbind();
-                $("#dealerHand").html(dealerHand.printHand());
-                return $("#messageBox").text("You win! Dealer had a score of " + dealerHand.score());
-            } else if (userHand.score() < dealerHand.score()) {
-                $("#hitButton").unbind();
-                $("#stayButton").unbind();
-                $("#dealerHand").html(dealerHand.printHand());
-                return $("#messageBox").text("You lose! The Dealer had a score of " + dealerHand.score());
-            } else if (userHand.score() == dealerHand.score()) {
-                $("#hitButton").unbind();
-                $("#stayButton").unbind();
-                $("#dealerHand").html(dealerHand.printHand());
-                return $("#messageBox").text("Push! Both you and the dealer had a score of " + dealerHand.score());
-            }
+
             
 
         }
 
         function playerTurn(userHand, dealerHand, deck) {
-
-
             userHand.setAced();
-            dealerHand.setAced();
-
-            $("#playerHand").text(userHand.printHand());
-            $("#dealerHand").text(dealerHand.getFaceupcard());
-
-            if (userHand.score() > 21 && userHand.getAced()) {
-                userHand.setScore(-10);
-                userHand.decreaseAced();
-                return playerTurn(useHrand, dealerHand, deck);
-            } else if (userHand.score() > 21) {
-                $("#hitButton").unbind();
-                $("#stayButton").unbind();
-                return endGame(userHand);
-            } else if (userHand.score() == 21) {
-                return dealerTurn(userHand, dealerHand, deck);
-            } else if (userHand.score() < 21) {
-                console.log("exected");
-                $("#hitButton").on("click", function() {
-                    userHand.hitMe(deck);
-                    return playerTurn(userHand, dealerHand, deck);
-
-                });
-
-                $("stayButton").on("click", function() {
-                    $("#hitButton").unbind();
-                    $("#stayButton").unbind();
-                    userHand.setStatus(1);
-                    return dealerTurn(userHand, dealerHand, deck);
+            
+            if (userHand.score() > 21 && userHand.getAced() >= 1) {
+                userHand.setScore(-10)
 
 
-                });
-                    
             }
+
+
         }
-
-            /*
-
-            if (userHand.score() > 21 && userHand.getAced()) {
-                $("#messageBox").text("You have a score of " + userHand.score() + "/" + (userHand.score() - 10) + ". Would you like to hit or stay?");
-                userHand.decreaseAced()
-            } else if (userHand.score() > 21) {
-                return endGame(userHand);
-            } else if (userHand.score() < 21) {
-                $("#hitButton").on("click", function() {
-                userHand.hitMe(deck);
-                $("#playerHand").text(userHand.printHand());
-
-                if (userHand.score > 21) {
-                    $("#hitButton").unbind();
-                    $("#stayButton").unbind();
-                    return $("#messageBox").text("You bust with a score of " + userHand.score() + "! Dealer had a hand of " + dealerhand.printHand());
-                } else {
-                    return playerTurn(userHand, dealerHand, deck);
-                }
-
-                });
-
-            $("#stayButton").on("click", function() {                    
-                $("#hitButton").unbind();
-                $("#stayButton").unbind();
-                userHand.setStatus(1);
-                return dealerTurn(userHand, dealerHand, deck);
-                     
-
-                });
-            }
-
-            */
             
         
 
@@ -390,10 +304,7 @@
  
 
         function endGame(userHand) {
-            $("#hitButton").unbind();
-            $("#stayButton").unbind();
-            return $("#messageBox").text("You bust! You had a score of " + userHand.score());
-
+     
         }
 
         function rematch() {
@@ -402,11 +313,10 @@
 
         function playGame() {
             var Deck1 = new Deck();
-            var userHand = playAsUser(Deck1);
-            var dealerHand = playAsDealer(Deck1);
+            var userHand = new Hand(Deck1);
+            var dealerHand = new Hand(Deck1);
 
-            secondDealing(userHand, dealerHand, Deck1);
-            playerTurn(userHand, dealerHand, Deck1);
+            playerTurn();
 
           }
 
