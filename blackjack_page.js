@@ -1,33 +1,8 @@
-<!DOCTYPE html>
-<html>
-	<head>
-			<h2>Your hand </h2>
-			<p id="playerHand" style="font-size:130%"></p>
-
-    		<button id = "hitButton"> Hit </button>
-
-            <button id = "stayButton"> Stay </button>
-
-            <button id = "replayButton"> Replay </button>
-
-			<h2>Dealer's hand </h2>
-			<p id="dealerHand" style="font-size:130%"></p>
-
-            <p id="messageBox" style="font-size:130%"></p>
-
-	</head>
-
-	<body>
-
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-
-		<script>
-
 		$(document).ready(function() {
 
         $("#replayButton").on("click", function() {
 
-            rematch(Deck1);
+            rematch();
         })
 			
 		function Deck() {
@@ -141,16 +116,11 @@
 
             this.getFaceupcard = function() {
             	 var result = "";
-            	 result += "|" + hand[0].getSuit() + hand[0].getRank() + "| "; 
+            	 result += "|" + hand[0].getSuit() + hand[0].getRank() + "| ";
             	 return result; 
             }
 
             this.hitMe = function(deck) {
-                if (deck.length < 4) {
-                    $("#stayButton").unbind();
-                    return $("#messageBox").text("The deck is out of cards! Shuffle the deck or refresh the page to continue!");
-                }
-
                 var card = deck.deal();
                 score += card.getValue();
 
@@ -213,7 +183,7 @@
             dealerHand.hitMe(deck);
         }
 
-        
+
         function declareWinner(userHand, dealerHand) {
             $("#playerHand").text(userHand.printHand());
             $("#dealerHand").text(dealerHand.printHand());
@@ -314,30 +284,22 @@
 
         }
 
-        function rematch(deck) {
+        function rematch() {
             $("#messageBox").text("");
-            return playGame(deck);
+            return playGame();
         }
-        
 
-        var Deck1 = new Deck();
-        playGame(Deck1);
+        function playGame() {
+            var Deck1 = new Deck();
+            var userHand = playAsUser(Deck1);
+            var dealerHand = playAsDealer(Deck1);
 
-        function playGame(deck) {
-            var userHand = playAsUser(deck);
-            var dealerHand = playAsDealer(deck);
+            secondDealing(userHand, dealerHand, Deck1);
 
-            secondDealing(userHand, dealerHand, deck);
-
-            playingPhase(userHand, dealerHand, deck);
+            playingPhase(userHand, dealerHand, Deck1);
 
           }
 
+        playGame();
 
     });
-
-		</script>
-
-	</body>
-
-</html>
